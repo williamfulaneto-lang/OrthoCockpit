@@ -1,0 +1,2563 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OrthoFlow • Cockpit Ortodôntico</title>
+  <style>
+    :root, [data-theme="dark"] {
+      --bg: #090e1a;
+      --card: #111827;
+      --surface: #1a2438;
+      --input: #0c1322;
+      --border: #25324b;
+      --text: #f1f5f9;
+      --muted: #94a3b8;
+      --accent: #0ea5e9;
+      --accent-hover: #0284c7;
+      --accent-soft: rgba(14, 165, 233, 0.14);
+      --accent-text: #38bdf8;
+
+      /* Cores das 4 Categorias */
+      --cat-conv-solid: #0ea5e9;
+      --cat-conv-bg: rgba(14, 165, 233, 0.15);
+      --cat-conv-border: rgba(14, 165, 233, 0.45);
+      --cat-conv-text: #38bdf8;
+
+      --cat-auto-solid: #8b5cf6;
+      --cat-auto-bg: rgba(139, 92, 246, 0.16);
+      --cat-auto-border: rgba(139, 92, 246, 0.45);
+      --cat-auto-text: #c4b5fd;
+
+      --cat-clear-solid: #14b8a6;
+      --cat-clear-bg: rgba(20, 184, 166, 0.16);
+      --cat-clear-border: rgba(20, 184, 166, 0.45);
+      --cat-clear-text: #5eead4;
+
+      --cat-cont-solid: #f59e0b;
+      --cat-cont-bg: rgba(245, 158, 11, 0.16);
+      --cat-cont-border: rgba(245, 158, 11, 0.45);
+      --cat-cont-text: #fcd34d;
+
+      /* Duração 30min+ */
+      --long-bg: rgba(244, 63, 94, 0.16);
+      --long-border: rgba(244, 63, 94, 0.45);
+      --long-text: #fda4af;
+
+      --amber-bg: rgba(245, 158, 11, 0.12);
+      --amber-border: rgba(245, 158, 11, 0.35);
+      --amber-text: #fbbf24;
+      --ok-bg: rgba(16, 185, 129, 0.14);
+      --ok-border: rgba(16, 185, 129, 0.4);
+      --ok-solid: #059669;
+      --ok-text: #34d399;
+      --danger: #fb7185;
+      --modal-backdrop: rgba(2, 6, 23, 0.82);
+    }
+
+    [data-theme="light"] {
+      --bg: #f1f5f9;
+      --card: #ffffff;
+      --surface: #f8fafc;
+      --input: #f8fafc;
+      --border: #cbd5e1;
+      --text: #0f172a;
+      --muted: #475569;
+      --accent: #0284c7;
+      --accent-hover: #0369a1;
+      --accent-soft: #e0f2fe;
+      --accent-text: #0369a1;
+
+      /* Cores das 4 Categorias (Modo Claro) */
+      --cat-conv-solid: #0284c7;
+      --cat-conv-bg: #e0f2fe;
+      --cat-conv-border: #7dd3fc;
+      --cat-conv-text: #0369a1;
+
+      --cat-auto-solid: #7c3aed;
+      --cat-auto-bg: #ede9fe;
+      --cat-auto-border: #c4b5fd;
+      --cat-auto-text: #5b21b6;
+
+      --cat-clear-solid: #0d9488;
+      --cat-clear-bg: #ccfbf1;
+      --cat-clear-border: #5eead4;
+      --cat-clear-text: #115e59;
+
+      --cat-cont-solid: #d97706;
+      --cat-cont-bg: #fef3c7;
+      --cat-cont-border: #fcd34d;
+      --cat-cont-text: #92400e;
+
+      /* Duração 30min+ */
+      --long-bg: #ffe4e6;
+      --long-border: #fda4af;
+      --long-text: #be123c;
+
+      --amber-bg: #fffbeb;
+      --amber-border: #fcd34d;
+      --amber-text: #92400e;
+      --ok-bg: #ecfdf5;
+      --ok-border: #6ee7b7;
+      --ok-solid: #059669;
+      --ok-text: #047857;
+      --danger: #e11d48;
+      --modal-backdrop: rgba(15, 23, 42, 0.55);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.45;
+      min-height: 100vh;
+    }
+
+    /* Cabeçalho Moderno */
+    header {
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      padding: 10px 20px;
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+
+    .wrap { max-width: 1280px; margin: 0 auto; }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #0ea5e9, #2563eb);
+      color: #fff;
+      font-weight: 800;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 8px rgba(14, 165, 233, 0.3);
+    }
+
+    .brand h1 { font-size: 15px; font-weight: 800; letter-spacing: -0.01em; }
+    .brand span { font-size: 11px; color: var(--muted); display: block; }
+
+    /* Centro do Cabeçalho: Relógio ao Vivo + Progresso do Turno */
+    .hud-center {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .clock-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 5px 12px;
+      border-radius: 10px;
+    }
+
+    .pulse-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #10b981;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.85); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    .clock-time {
+      font-size: 15px;
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+      color: var(--text);
+    }
+
+    .clock-date {
+      font-size: 11px;
+      color: var(--muted);
+      border-left: 1px solid var(--border);
+      padding-left: 8px;
+    }
+
+    .progress-pill {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 5px 12px;
+      border-radius: 10px;
+    }
+
+    .prog-info {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .prog-labels {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .prog-count { color: var(--ok-text); }
+    .prog-next { color: var(--muted); }
+
+    .prog-track {
+      width: 130px;
+      height: 5px;
+      background: var(--input);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .prog-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #0ea5e9, #10b981);
+      border-radius: 999px;
+      transition: width 0.3s ease;
+    }
+
+    .nav-btns { display: flex; gap: 7px; align-items: center; flex-wrap: wrap; }
+
+    button {
+      font-family: inherit;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s, color 0.15s, opacity 0.15s;
+    }
+
+    .btn-sm {
+      background: var(--surface);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 6px 10px;
+      font-size: 12px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .btn-sm:hover { border-color: var(--accent); }
+
+    .btn-import-nav {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 7px 12px;
+      font-size: 12px;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .btn-import-nav:hover { background: var(--accent-hover); }
+
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: #f59e0b; }
+    .dot.on { background: #10b981; }
+
+    .drawer {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 20px;
+    }
+    .hidden { display: none !important; }
+
+    .drawer-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    /* Modais */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: var(--modal-backdrop);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      z-index: 40;
+    }
+
+    .modal-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      width: 100%;
+      max-width: 600px;
+      padding: 20px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.45);
+    }
+
+    .modal-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 12px;
+      margin-bottom: 14px;
+      border-bottom: 1px solid var(--border);
+    }
+    .modal-head h3 { font-size: 15px; font-weight: 800; }
+
+    .preview-list {
+      margin-top: 8px;
+      max-height: 130px;
+      overflow-y: auto;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+    }
+
+    .preview-tag {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 6px;
+      border: 1px solid transparent;
+    }
+
+    .backup-card-option {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 13px;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .backup-card-option h4 { font-size: 13px; font-weight: 800; margin-bottom: 2px; }
+    .backup-card-option p { font-size: 11.5px; color: var(--muted); }
+
+    /* Layout Principal */
+    .main-grid {
+      display: grid;
+      grid-template-columns: 455px 1fr;
+      gap: 20px;
+      padding: 20px;
+      align-items: start;
+    }
+
+    @media (max-width: 960px) {
+      .main-grid { grid-template-columns: 1fr; }
+    }
+
+    .box {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px;
+    }
+
+    .console-status-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+      font-size: 11px;
+    }
+
+    .save-badge {
+      color: var(--ok-text);
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .editing-banner {
+      background: var(--amber-bg);
+      border: 1px solid var(--amber-border);
+      color: var(--amber-text);
+      border-radius: 9px;
+      padding: 8px 11px;
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .field { margin-bottom: 13px; }
+
+    .label-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+
+    .lbl {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--muted);
+    }
+
+    .patient-grid {
+      display: grid;
+      grid-template-columns: 1fr 105px;
+      gap: 8px;
+    }
+
+    .input-rel { position: relative; display: flex; align-items: center; }
+
+    input[type="text"], input[type="time"], input[type="date"], input[type="password"], select, textarea {
+      width: 100%;
+      background: var(--input);
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 9px;
+      padding: 9px 11px;
+      font-size: 13.5px;
+      font-family: inherit;
+    }
+    input[type="date"] {
+      width: auto;
+      padding: 5px 9px;
+      font-size: 12px;
+      font-weight: 700;
+      border-radius: 8px;
+    }
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    .case-btn {
+      position: absolute;
+      right: 7px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--accent-text);
+      font-size: 11px;
+      font-weight: 800;
+      padding: 3px 7px;
+      border-radius: 6px;
+    }
+    .case-btn:hover { border-color: var(--accent); }
+
+    /* Seletor das 4 Categorias com Cores Distintas */
+    .mech-tabs {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 7px;
+    }
+
+    .mech-btn {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 9px;
+      padding: 9px 10px;
+      font-size: 12px;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+    }
+
+    .cat-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .mech-btn[data-mech="mbt"] .cat-dot { background: var(--cat-conv-solid); }
+    .mech-btn[data-mech="mbt"]:hover { border-color: var(--cat-conv-solid); }
+    .mech-btn[data-mech="mbt"].active {
+      background: var(--cat-conv-solid);
+      border-color: var(--cat-conv-solid);
+      color: #ffffff;
+    }
+
+    .mech-btn[data-mech="slp"] .cat-dot { background: var(--cat-auto-solid); }
+    .mech-btn[data-mech="slp"]:hover { border-color: var(--cat-auto-solid); }
+    .mech-btn[data-mech="slp"].active {
+      background: var(--cat-auto-solid);
+      border-color: var(--cat-auto-solid);
+      color: #ffffff;
+    }
+
+    .mech-btn[data-mech="clearcorrect"] .cat-dot { background: var(--cat-clear-solid); }
+    .mech-btn[data-mech="clearcorrect"]:hover { border-color: var(--cat-clear-solid); }
+    .mech-btn[data-mech="clearcorrect"].active {
+      background: var(--cat-clear-solid);
+      border-color: var(--cat-clear-solid);
+      color: #ffffff;
+    }
+
+    .mech-btn[data-mech="contencao"] .cat-dot { background: var(--cat-cont-solid); }
+    .mech-btn[data-mech="contencao"]:hover { border-color: var(--cat-cont-solid); }
+    .mech-btn[data-mech="contencao"].active {
+      background: var(--cat-cont-solid);
+      border-color: var(--cat-cont-solid);
+      color: #ffffff;
+    }
+
+    .mech-btn.active .cat-dot { background: #ffffff; }
+
+    /* Construtor de Arco (Aparelho Fixo: Convencional & Autoligado) */
+    .arch-builder {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--cat-conv-solid);
+      border-radius: 10px;
+      padding: 10px 11px;
+      margin-bottom: 13px;
+    }
+    .arch-builder.auto-theme {
+      border-left-color: var(--cat-auto-solid);
+    }
+
+    .arch-row {
+      margin-bottom: 8px;
+    }
+    .arch-row:last-child {
+      margin-bottom: 0;
+    }
+
+    .arch-sublabel {
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--muted);
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .pill-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+
+    .opt-pill {
+      background: var(--input);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 8px;
+      border-radius: 6px;
+    }
+    .opt-pill:hover {
+      border-color: var(--accent);
+    }
+    .opt-pill.selected {
+      background: var(--accent-soft);
+      border-color: var(--accent);
+      color: var(--accent-text);
+      font-weight: 800;
+    }
+    .arch-builder.auto-theme .opt-pill.selected {
+      background: var(--cat-auto-bg);
+      border-color: var(--cat-auto-solid);
+      color: var(--cat-auto-text);
+    }
+
+    .arch-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      margin-top: 9px;
+      padding-top: 8px;
+      border-top: 1px solid var(--border);
+    }
+
+    .btn-arch-add {
+      background: var(--accent-soft);
+      border: 1px solid var(--cat-conv-border);
+      color: var(--cat-conv-text);
+      border-radius: 7px;
+      padding: 6px 8px;
+      font-size: 11px;
+      font-weight: 800;
+      text-align: center;
+    }
+    .btn-arch-add:hover {
+      background: var(--accent);
+      color: #fff;
+    }
+    .arch-builder.auto-theme .btn-arch-add {
+      background: var(--cat-auto-bg);
+      border-color: var(--cat-auto-border);
+      color: var(--cat-auto-text);
+    }
+    .arch-builder.auto-theme .btn-arch-add:hover {
+      background: var(--cat-auto-solid);
+      color: #fff;
+    }
+
+    .btn-arch-keep {
+      background: var(--input);
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 7px;
+      padding: 6px 8px;
+      font-size: 11px;
+      font-weight: 700;
+      text-align: center;
+    }
+    .btn-arch-keep:hover {
+      border-color: var(--accent);
+      color: var(--accent-text);
+    }
+
+    /* Sub-abas: Atalhos vs Modelos Prontos */
+    .mode-switch {
+      display: inline-flex;
+      background: var(--input);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 2px;
+    }
+    .mode-tab {
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 9px;
+      border-radius: 6px;
+    }
+    .mode-tab.active {
+      background: var(--surface);
+      color: var(--accent-text);
+    }
+
+    .chips-box {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .chip {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-size: 11.5px;
+      font-weight: 500;
+      padding: 5px 9px;
+      border-radius: 7px;
+    }
+    .chip:hover { border-color: var(--accent); color: var(--accent-text); }
+
+    .chip.preset {
+      border-color: rgba(14, 165, 233, 0.4);
+      background: var(--accent-soft);
+      color: var(--accent-text);
+      font-weight: 600;
+    }
+
+    .btn-row { display: flex; gap: 8px; }
+
+    .btn-primary {
+      flex: 1;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      padding: 11px 14px;
+      font-size: 13.5px;
+      font-weight: 700;
+    }
+    .btn-primary:hover { background: var(--accent-hover); }
+
+    .btn-clear {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      border-radius: 10px;
+      padding: 11px 14px;
+      font-size: 12.5px;
+      font-weight: 600;
+    }
+    .btn-clear:hover { color: var(--text); }
+
+    /* Coluna Direita */
+    .list-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+      padding: 0 2px;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .list-title-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .list-top h2 {
+      font-size: 13px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--muted);
+    }
+
+    /* Separador entre Aguardando e Atendidos */
+    .queue-divider {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 16px 0 12px;
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--ok-text);
+    }
+    .queue-divider::before,
+    .queue-divider::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .entry-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-left-width: 4px;
+      border-radius: 14px;
+      padding: 15px;
+      margin-bottom: 10px;
+    }
+    .entry-card.cat-mbt { border-left-color: var(--cat-conv-solid); }
+    .entry-card.cat-slp { border-left-color: var(--cat-auto-solid); }
+    .entry-card.cat-clearcorrect { border-left-color: var(--cat-clear-solid); }
+    .entry-card.cat-contencao { border-left-color: var(--cat-cont-solid); }
+
+    .entry-card.compiled-card {
+      opacity: 0.94;
+    }
+
+    .entry-card.done { border-top-color: var(--ok-border); border-right-color: var(--ok-border); border-bottom-color: var(--ok-border); }
+    .entry-card.draft {
+      border-top-style: dashed;
+      border-right-style: dashed;
+      border-bottom-style: dashed;
+      padding: 11px 15px;
+    }
+    .entry-card.draft.active-draft {
+      border-style: solid;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px var(--accent-soft);
+    }
+
+    .entry-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 10px;
+      margin-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .entry-card.draft .entry-head {
+      padding-bottom: 0;
+      margin-bottom: 0;
+      border-bottom: none;
+    }
+
+    .entry-meta { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; }
+    .tag-time {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      font-size: 12px;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .tag-dur {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 6px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--muted);
+    }
+    .tag-dur.long {
+      background: var(--long-bg);
+      border-color: var(--long-border);
+      color: var(--long-text);
+      font-weight: 800;
+    }
+
+    .tag-name { font-size: 15px; font-weight: 800; cursor: pointer; }
+    .tag-name:hover { color: var(--accent-text); }
+
+    .tag-mech {
+      font-size: 11px;
+      font-weight: 800;
+      padding: 2px 9px;
+      border-radius: 999px;
+      border: 1px solid transparent;
+    }
+    .tag-mech.cat-mbt, .preview-tag.cat-mbt {
+      background: var(--cat-conv-bg);
+      border-color: var(--cat-conv-border);
+      color: var(--cat-conv-text);
+    }
+    .tag-mech.cat-slp, .preview-tag.cat-slp {
+      background: var(--cat-auto-bg);
+      border-color: var(--cat-auto-border);
+      color: var(--cat-auto-text);
+    }
+    .tag-mech.cat-clearcorrect, .preview-tag.cat-clearcorrect {
+      background: var(--cat-clear-bg);
+      border-color: var(--cat-clear-border);
+      color: var(--cat-clear-text);
+    }
+    .tag-mech.cat-contencao, .preview-tag.cat-contencao {
+      background: var(--cat-cont-bg);
+      border-color: var(--cat-cont-border);
+      color: var(--cat-cont-text);
+    }
+
+    .tag-note {
+      background: var(--surface);
+      border: 1px dashed var(--border);
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 6px;
+    }
+
+    .tag-done {
+      background: var(--ok-bg);
+      color: var(--ok-text);
+      border: 1px solid var(--ok-border);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 999px;
+    }
+
+    .btn-fill-draft {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 6px 12px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .btn-fill-draft:hover { background: var(--accent-hover); }
+
+    .out-box {
+      background: var(--input);
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      padding: 10px 12px;
+      font-size: 13px;
+      color: var(--text);
+      margin-bottom: 10px;
+      width: 100%;
+      resize: vertical;
+      font-family: inherit;
+    }
+
+    .next-box {
+      background: var(--amber-bg);
+      border: 1px solid var(--amber-border);
+      border-radius: 9px;
+      padding: 9px 12px;
+      font-size: 12.5px;
+      color: var(--amber-text);
+      margin-bottom: 11px;
+      width: 100%;
+      resize: vertical;
+      font-family: inherit;
+    }
+
+    .copy-row {
+      display: grid;
+      grid-template-columns: 1.3fr 1fr;
+      gap: 8px;
+    }
+
+    .btn-copy {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 9px;
+      padding: 9px 12px;
+      font-size: 12.5px;
+      font-weight: 700;
+    }
+    .btn-copy:hover { background: var(--accent-hover); }
+    .btn-copy.copied { background: var(--ok-solid); }
+
+    .btn-copy-next {
+      background: var(--amber-bg);
+      border: 1px solid var(--amber-border);
+      color: var(--amber-text);
+      border-radius: 9px;
+      padding: 9px 12px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .btn-copy-next.copied { background: #d97706; color: #fff; border-color: #d97706; }
+
+    .empty {
+      background: var(--card);
+      border: 1px dashed var(--border);
+      border-radius: 14px;
+      padding: 36px 16px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #0f172a;
+      color: #f8fafc;
+      border: 1px solid #334155;
+      padding: 10px 16px;
+      border-radius: 10px;
+      font-size: 12.5px;
+      font-weight: 700;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+      z-index: 60;
+    }
+    .toast.show { opacity: 1; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="wrap nav">
+      <div class="brand">
+        <div class="logo">OF</div>
+        <div>
+          <h1>OrthoFlow</h1>
+          <span>Clinicorp Cockpit</span>
+        </div>
+      </div>
+
+      <!-- HUD Central: Relógio ao Vivo + Progresso -->
+      <div class="hud-center">
+        <div class="clock-pill" title="Horário atual em tempo real">
+          <span class="pulse-dot"></span>
+          <span class="clock-time" id="liveClockTime">--:--</span>
+          <span class="clock-date" id="liveClockDate">--/--</span>
+        </div>
+
+        <div class="progress-pill">
+          <div class="prog-info">
+            <div class="prog-labels">
+              <span class="prog-count" id="hudProgressText">0/0 lançados</span>
+              <span class="prog-next" id="hudNextText">• Fila vazia</span>
+            </div>
+            <div class="prog-track">
+              <div class="prog-fill" id="hudProgressBar"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="nav-btns">
+        <button type="button" class="btn-import-nav" data-action="open-import">📅 Colar Agenda</button>
+        <button type="button" class="btn-sm" data-action="open-backup" title="Salvar ou restaurar backup do dia">💾 Backup</button>
+        <button type="button" class="btn-sm" id="themeBtn" data-action="toggle-theme">☀️ Modo Claro</button>
+        <button type="button" class="btn-sm" data-action="toggle-settings">
+          <span id="apiDot" class="dot"></span>
+          <span id="apiLabel">Motor Local</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Modal Importar Agenda Clinicorp -->
+  <div id="importModal" class="modal-overlay hidden">
+    <div class="modal-card">
+      <div class="modal-head">
+        <h3>📅 Colar Agenda do Clinicorp</h3>
+        <button type="button" class="btn-sm" data-action="close-import">✕</button>
+      </div>
+
+      <div class="field">
+        <div class="label-row">
+          <span class="lbl">Cole o texto da agenda para o dia <b id="importTargetDateLabel" style="color:var(--accent-text);"></b></span>
+        </div>
+        <textarea id="schedulePasteArea" rows="7" placeholder="Cole aqui a agenda copiada do Clinicorp (ex: 10:00 - 10:15 AGENDAMENTO / 44814 - NOME...)"></textarea>
+        <div id="importPreviewBox" class="preview-list"></div>
+      </div>
+
+      <div class="field">
+        <div class="label-row">
+          <span class="lbl">Categoria Padrão (observações como "clear" e "contensão" ajustam sozinhas)</span>
+        </div>
+        <select id="importDefaultMech">
+          <option value="mbt">Convencional</option>
+          <option value="slp">Autoligado</option>
+          <option value="clearcorrect">ClearCorrect</option>
+          <option value="contencao">Contenção</option>
+        </select>
+      </div>
+
+      <div class="btn-row">
+        <button type="button" class="btn-primary" id="confirmImportBtn" data-action="confirm-import">⚡ Gerar Cards (0)</button>
+        <button type="button" class="btn-clear" data-action="close-import">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Backup & Restauração -->
+  <div id="backupModal" class="modal-overlay hidden">
+    <div class="modal-card">
+      <div class="modal-head">
+        <h3>💾 Backup & Segurança dos Dados</h3>
+        <button type="button" class="btn-sm" data-action="close-backup">✕</button>
+      </div>
+
+      <div class="backup-card-option">
+        <div>
+          <h4>📄 Relatório do Turno Atual (.txt)</h4>
+          <p>Baixa um texto limpo com todas as evoluções e retornos do dia selecionado (<span id="backupDateLabel"></span>).</p>
+        </div>
+        <button type="button" class="btn-primary" style="flex:0 0 auto; padding:8px 13px; font-size:12px;" data-action="export-txt">Baixar .TXT</button>
+      </div>
+
+      <div class="backup-card-option">
+        <div>
+          <h4>📦 Backup Completo do Histórico (.json)</h4>
+          <p>Exporta todos os dias salvos (últimos 30 dias) para guardar ou abrir em outro computador.</p>
+        </div>
+        <button type="button" class="btn-sm" style="padding:8px 13px;" data-action="export-json">Exportar .JSON</button>
+      </div>
+
+      <div class="backup-card-option" style="margin-bottom:0;">
+        <div>
+          <h4>📂 Restaurar Arquivo de Backup (.json)</h4>
+          <p>Recupera turnos e evoluções a partir de um arquivo .json salvo anteriormente.</p>
+        </div>
+        <label class="btn-sm" style="padding:8px 13px; cursor:pointer;">
+          Importar .JSON
+          <input type="file" id="restoreJsonInput" accept=".json" style="display:none;">
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <!-- Drawer Configurações API -->
+  <div id="settingsDrawer" class="drawer hidden">
+    <div class="wrap">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <span class="lbl" style="color:var(--accent-text);">Configuração de IA Externa (Opcional — funciona 100% offline)</span>
+        <button type="button" class="btn-sm" data-action="toggle-settings">Fechar ✕</button>
+      </div>
+      <div class="drawer-grid">
+        <div>
+          <label class="lbl" style="display:block; margin-bottom:4px;">Provedor</label>
+          <select id="apiProvider">
+            <option value="offline">Motor Local Offline (Instantâneo)</option>
+            <option value="openai">OpenAI (GPT-4o-mini)</option>
+            <option value="groq">Groq (Llama-3.3-70b)</option>
+            <option value="deepseek">DeepSeek (DeepSeek-Chat)</option>
+          </select>
+        </div>
+        <div>
+          <label class="lbl" style="display:block; margin-bottom:4px;">Chave API</label>
+          <input type="password" id="apiKey" placeholder="sk-...">
+        </div>
+        <div style="display:flex; align-items:flex-end;">
+          <button type="button" class="btn-primary" style="padding:9px;" data-action="save-settings">Salvar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <main class="wrap main-grid">
+
+    <!-- Console Esquerdo -->
+    <section class="box">
+      <div class="console-status-bar">
+        <span class="lbl">Console de Evolução</span>
+        <span class="save-badge" id="autoSaveStatus">✓ Salvo localmente</span>
+      </div>
+
+      <div id="editingBanner" class="editing-banner hidden">
+        <span id="editingBannerText">Atendendo: 10:00 • Paciente</span>
+        <button type="button" class="btn-sm" style="padding:2px 8px;" data-action="cancel-draft-edit">Desvincular</button>
+      </div>
+
+      <div class="field patient-grid">
+        <div>
+          <div class="label-row">
+            <span class="lbl">Paciente (1º Nome)</span>
+          </div>
+          <div class="input-rel">
+            <input type="text" id="patientName" placeholder="Ex: Clebersom" style="padding-right: 46px;">
+            <button type="button" class="case-btn" id="caseBtn" data-action="toggle-case" title="Alternar 1º nome: Inicial Maiúscula (Aa) ou CAIXA ALTA (AA)">Aa</button>
+          </div>
+        </div>
+        <div>
+          <div class="label-row">
+            <span class="lbl">Horário</span>
+          </div>
+          <input type="time" id="appointmentTime">
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="label-row">
+          <span class="lbl">Categoria</span>
+        </div>
+        <div class="mech-tabs" id="mechTabs">
+          <button type="button" class="mech-btn active" data-action="select-mech" data-mech="mbt"><span class="cat-dot"></span>Convencional</button>
+          <button type="button" class="mech-btn" data-action="select-mech" data-mech="slp"><span class="cat-dot"></span>Autoligado</button>
+          <button type="button" class="mech-btn" data-action="select-mech" data-mech="clearcorrect"><span class="cat-dot"></span>ClearCorrect</button>
+          <button type="button" class="mech-btn" data-action="select-mech" data-mech="contencao"><span class="cat-dot"></span>Contenção</button>
+        </div>
+      </div>
+
+      <!-- Construtor de Arco (Exibido para Aparelho Fixo: Convencional & Autoligado) -->
+      <div id="archwireBuilder" class="arch-builder">
+        <div class="arch-row">
+          <span class="arch-sublabel">Arcada</span>
+          <div class="pill-group" id="archGroup">
+            <button type="button" class="opt-pill selected" data-action="set-arch" data-val="superior">Superior</button>
+            <button type="button" class="opt-pill" data-action="set-arch" data-val="inferior">Inferior</button>
+            <button type="button" class="opt-pill" data-action="set-arch" data-val="superior e inferior">Sup e Inf</button>
+          </div>
+        </div>
+
+        <div class="arch-row">
+          <span class="arch-sublabel">Material do Arco</span>
+          <div class="pill-group" id="matGroup">
+            <button type="button" class="opt-pill selected" data-action="set-mat" data-val="NiTi">NiTi</button>
+            <button type="button" class="opt-pill" data-action="set-mat" data-val="Termoativado">Termoativado</button>
+            <button type="button" class="opt-pill" data-action="set-mat" data-val="Aço">Aço</button>
+            <button type="button" class="opt-pill" data-action="set-mat" data-val="TMA">TMA</button>
+          </div>
+        </div>
+
+        <div class="arch-row">
+          <span class="arch-sublabel">Medida</span>
+          <div class="pill-group" id="sizeGroup">
+            <button type="button" class="opt-pill" data-action="set-size" data-val='.012"'>.012"</button>
+            <button type="button" class="opt-pill selected" data-action="set-size" data-val='.014"'>.014"</button>
+            <button type="button" class="opt-pill" data-action="set-size" data-val='.016"'>.016"</button>
+            <button type="button" class="opt-pill" data-action="set-size" data-val='.018"'>.018"</button>
+            <button type="button" class="opt-pill" data-action="set-size" data-val='.014"x.025"'>.014"x.025"</button>
+            <button type="button" class="opt-pill" data-action="set-size" data-val='.016"x.022"'>.016"x.022"</button>
+            <button type="button" class="opt-pill" data-action="set-size" data-val='.017"x.025"'>.017"x.025"</button>
+            <button type="button" class="opt-pill" data-action="set-size" data-val='.019"x.025"'>.019"x.025"</button>
+          </div>
+        </div>
+
+        <div class="arch-actions">
+          <button type="button" class="btn-arch-add" id="btnArchChange" data-action="insert-arch-change">+ Troca: Sup .014" NiTi</button>
+          <button type="button" class="btn-arch-keep" id="btnArchKeep" data-action="insert-arch-keep">+ Mantido: Sup .014" NiTi</button>
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="label-row">
+          <span class="lbl">Complementos Rápidos</span>
+          <div class="mode-switch" id="chipModeTabs">
+            <button type="button" class="mode-tab active" data-action="switch-chip-mode" data-mode="shortcuts">Atalhos</button>
+            <button type="button" class="mode-tab" data-action="switch-chip-mode" data-mode="presets">Modelos Prontos</button>
+          </div>
+        </div>
+        <div id="chipsArea" class="chips-box"></div>
+      </div>
+
+      <div class="field">
+        <div class="label-row">
+          <span class="lbl">Tópicos do Atendimento</span>
+          <span style="font-size:11px; color:var(--muted);">Use <b>Próx:</b> para retorno</span>
+        </div>
+        <textarea id="rawNotes" rows="3" placeholder="Ex: troca de arco superior .016&quot; NiTi, manutenção do arco inferior .019&quot;x.025&quot; Aço, elástico Cl II 3/16, prox: avaliar tubo 47"></textarea>
+      </div>
+
+      <div class="btn-row">
+        <button type="button" class="btn-primary" id="compileBtn" data-action="compile">⚡ Compilar Evolução</button>
+        <button type="button" class="btn-clear" data-action="clear-form">Limpar</button>
+      </div>
+    </section>
+
+    <!-- Lista Direita -->
+    <section>
+      <div class="list-top">
+        <div class="list-title-group">
+          <h2>Turno (<span id="countBadge">0</span>)</h2>
+          <input type="date" id="turnDatePicker" title="Selecionar data do histórico (últimos 30 dias)">
+          <button type="button" class="btn-sm hidden" id="todayBtn" data-action="go-today">Voltar para Hoje</button>
+        </div>
+        <div style="display:flex; gap:6px; align-items:center;">
+          <button type="button" class="btn-sm" data-action="open-import">+ Colar Agenda</button>
+          <button type="button" class="btn-sm" id="clearAllBtn" style="color:var(--danger);" data-action="clear-all">Limpar Dia</button>
+        </div>
+      </div>
+      <div id="entriesList"></div>
+    </section>
+
+  </main>
+
+  <div id="toast" class="toast">Copiado!</div>
+
+  <script>
+    const MECH_LABELS = {
+      mbt: 'Convencional',
+      slp: 'Autoligado',
+      clearcorrect: 'ClearCorrect',
+      contencao: 'Contenção'
+    };
+
+    const SHORTCUTS = {
+      mbt: [
+        'Elástico Cl II 3/16 médio',
+        'Elástico Cl III 3/16 médio',
+        'Elástico intercuspidação 1/8',
+        'Amarrilho conjugado',
+        'Recolagem de braquete',
+        'Colagem de tubo',
+        'Mola aberta NiTi',
+        'Cadeia elastomérica',
+        'Próx: '
+      ],
+      slp: [
+        'Abertura clips e limpeza slots',
+        'Fechamento passivo dos clips',
+        'Levante de mordida posterior',
+        'Instalação de stops',
+        'Elástico intermaxilar 3/16',
+        'Recolagem de braquete',
+        'Cadeia elastomérica',
+        'Próx: '
+      ],
+      clearcorrect: [
+        'Check tracking e adaptação',
+        'Entrega nova sequência de placas',
+        'IPR interproximal realizado',
+        'Instalação de attachments',
+        'Reparo de attachment solto',
+        'Uso de elásticos em cutouts',
+        'Escaneamento para refinamento',
+        'Próx: '
+      ],
+      contencao: [
+        'Revisão contenção fixa 3x3 inf',
+        'Revisão placa acetato sup',
+        'Profilaxia e remoção de tártaro',
+        'Recolagem ponto resina 3x3',
+        'Estabilidade oclusal mantida',
+        'Moldagem para nova contenção',
+        'Retorno em 6 meses',
+        'Próx: '
+      ]
+    };
+
+    const PRESETS = {
+      mbt: [
+        {
+          title: 'Alinhamento Inicial .014" NiTi',
+          text: 'troca de arco superior e inferior .014" NiTi, conjugação posterior e orientações de higiene.\nPróx: Evoluir calibre para .016" NiTi'
+        },
+        {
+          title: 'Nivelamento .016"x.022" NiTi',
+          text: 'evolução mecânica com arco superior e inferior .016"x.022" NiTi, conferência de alinhamento.\nPróx: Avaliar transição para aço .019"x.025"'
+        },
+        {
+          title: 'Fase Trabalho Aço + Elástico Cl II',
+          text: 'instalação de arco superior e inferior .019"x.025" Aço, elásticos intermaxilares Classe II 3/16 médio.\nPróx: Reavaliar relação anteroposterior e uso de elásticos'
+        },
+        {
+          title: 'Intercuspidação Final',
+          text: 'ajuste oclusal fino em arco de aço e instalação de elásticos de intercuspidação 1/8.\nPróx: Avaliar remoção do aparelho e contenções'
+        }
+      ],
+      slp: [
+        {
+          title: 'Ativação Inicial .014" Termo',
+          text: 'abertura dos clips autoligados, profilaxia dos slots e inserção de arco superior e inferior .014" Termoativado com stops.\nPróx: Evoluir para .014"x.025" Termoativado'
+        },
+        {
+          title: 'Evolução .014"x.025" + Levante',
+          text: 'troca de arco superior e inferior .014"x.025" Termoativado e ajuste de levante de mordida posterior.\nPróx: Reavaliar desoclusão e evoluir calibre'
+        },
+        {
+          title: 'Controle Torque Aço .019"x.025"',
+          text: 'inserção de arco superior e inferior .019"x.025" Aço, fechamento passivo dos clips e controle de torque.\nPróx: Avaliar engrenamento oclusal'
+        }
+      ],
+      clearcorrect: [
+        {
+          title: 'Check Tracking + Entrega Placas',
+          text: 'check de adaptação marginal e tracking dos alinhadores, entrega da próxima sequência de placas.\nPróx: Monitorar assentamento e uso mínimo de 22h/dia'
+        },
+        {
+          title: 'IPR + Instalação Attachments',
+          text: 'desgaste interproximal (IPR) calibrado conforme guia e instalação de attachments em resina composta.\nPróx: Conferir adaptação da placa após IPR'
+        },
+        {
+          title: 'Escaneamento Refinamento',
+          text: 'remoção de attachments anteriores, profilaxia e escaneamento intraoral para etapa de refinamento.\nPróx: Instalar novos alinhadores de refinamento'
+        }
+      ],
+      contencao: [
+        {
+          title: 'Revisão Semestral Estável',
+          text: 'revisão clínica da contenção fixa 3x3 inferior e placa de acetato superior, estabilidade oclusal mantida.\nPróx: Retorno preventivo em 6 meses'
+        },
+        {
+          title: 'Reparo Contenção 3x3',
+          text: 'profilaxia local e recolagem de ponto de resina composta na contenção fixa 3x3 inferior.\nPróx: Reavaliar integridade da colagem'
+        },
+        {
+          title: 'Moldagem Nova Contenção',
+          text: 'moldagem anatômica para confecção de nova placa de contenção superior em acetato.\nPróx: Instalação e ajuste da nova placa de contenção'
+        }
+      ]
+    };
+
+    const STORAGE_HISTORY_KEY = 'of_history_v25';
+    const STORAGE_META_KEY = 'of_meta_v25';
+    const STORAGE_DRAFT_KEY = 'of_draft_state_v25';
+
+    let currentMech = 'mbt';
+    let chipMode = 'shortcuts';
+    let upperFullFirst = localStorage.getItem('of_upper_first') === 'true';
+
+    // Estado do Construtor de Arco (Aparelho Fixo)
+    let archState = {
+      arch: 'superior',
+      material: 'NiTi',
+      size: '.014"'
+    };
+
+    let selectedDate = getTodayISO();
+    let historyStore = loadHistoryStore();
+    let metaStore = JSON.parse(localStorage.getItem(STORAGE_META_KEY) || '{}');
+    let entries = historyStore[selectedDate] || [];
+
+    let activeDraftId = null;
+    let isTimeLocked = false;
+    let seed = Math.floor(Math.random() * 10);
+    let confirmClearTimer = null;
+    let savePulseTimer = null;
+
+    function getTodayISO() {
+      const now = new Date();
+      const yyyy = now.getFullYear();
+      const mm = String(now.getMonth() + 1).padStart(2, '0');
+      const dd = String(now.getDate()).padStart(2, '0');
+      return `${yyyy}-${mm}-${dd}`;
+    }
+
+    function formatDateBR(isoStr) {
+      if (!isoStr || !isoStr.includes('-')) return isoStr;
+      const [y, m, d] = isoStr.split('-');
+      return `${d}/${m}/${y}`;
+    }
+
+    function loadHistoryStore() {
+      const store = JSON.parse(localStorage.getItem(STORAGE_HISTORY_KEY) || '{}');
+      const legacy = localStorage.getItem('of_entries_v24');
+      if (legacy) {
+        try {
+          const parsedLegacy = JSON.parse(legacy);
+          if (Array.isArray(parsedLegacy) && parsedLegacy.length > 0) {
+            const today = getTodayISO();
+            store[today] = [...(store[today] || []), ...parsedLegacy];
+            localStorage.setItem(STORAGE_HISTORY_KEY, JSON.stringify(store));
+          }
+          localStorage.removeItem('of_entries_v24');
+        } catch (e) {}
+      }
+      return store;
+    }
+
+    function init() {
+      const savedTheme = localStorage.getItem('of_theme') || 'dark';
+      applyTheme(savedTheme);
+      document.getElementById('caseBtn').textContent = upperFullFirst ? 'AA' : 'Aa';
+
+      const datePicker = document.getElementById('turnDatePicker');
+      datePicker.value = selectedDate;
+      datePicker.addEventListener('change', function () {
+        if (!this.value) this.value = getTodayISO();
+        switchDate(this.value);
+      });
+
+      restoreDraftFormState();
+      syncArchBuilderUI();
+      startLiveClock();
+      renderChipsArea();
+      renderEntries(true);
+      loadApiSettings();
+
+      const patientInput = document.getElementById('patientName');
+      patientInput.addEventListener('input', function () {
+        isTimeLocked = true;
+        const start = this.selectionStart;
+        const end = this.selectionEnd;
+        const formatted = formatFirstName(this.value);
+        if (this.value !== formatted) {
+          this.value = formatted;
+          this.setSelectionRange(start, end);
+        }
+        persistDraftFormState();
+      });
+
+      document.getElementById('appointmentTime').addEventListener('change', function () {
+        isTimeLocked = true;
+        persistDraftFormState();
+      });
+
+      document.getElementById('rawNotes').addEventListener('input', function () {
+        isTimeLocked = true;
+        persistDraftFormState();
+      });
+
+      document.getElementById('rawNotes').addEventListener('keydown', function (e) {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+          e.preventDefault();
+          compileEntry();
+        }
+      });
+
+      document.getElementById('schedulePasteArea').addEventListener('input', updateImportPreview);
+      document.getElementById('importDefaultMech').addEventListener('change', updateImportPreview);
+
+      document.getElementById('importModal').addEventListener('click', function (e) {
+        if (e.target.id === 'importModal') closeImportModal();
+      });
+
+      document.getElementById('backupModal').addEventListener('click', function (e) {
+        if (e.target.id === 'backupModal') closeBackupModal();
+      });
+
+      document.getElementById('restoreJsonInput').addEventListener('change', handleRestoreJson);
+
+      document.addEventListener('click', handleGlobalClick);
+    }
+
+    /* Ordenação inteligente: Pendentes (draft) no topo, Atendidos (compiled) abaixo */
+    function getSortedEntries(list) {
+      return [...list].sort((a, b) => {
+        const rankA = a.status === 'draft' ? 0 : 1;
+        const rankB = b.status === 'draft' ? 0 : 1;
+        if (rankA !== rankB) return rankA - rankB;
+        return (a.time || '').localeCompare(b.time || '');
+      });
+    }
+
+    /* Sincroniza visibilidade e botões do Construtor de Arco */
+    function syncArchBuilderUI() {
+      const builder = document.getElementById('archwireBuilder');
+      const isFixed = currentMech === 'mbt' || currentMech === 'slp';
+
+      builder.classList.toggle('hidden', !isFixed);
+      builder.classList.toggle('auto-theme', currentMech === 'slp');
+
+      document.querySelectorAll('#archGroup .opt-pill').forEach(btn => {
+        btn.classList.toggle('selected', btn.dataset.val === archState.arch);
+      });
+      document.querySelectorAll('#matGroup .opt-pill').forEach(btn => {
+        btn.classList.toggle('selected', btn.dataset.val === archState.material);
+      });
+      document.querySelectorAll('#sizeGroup .opt-pill').forEach(btn => {
+        btn.classList.toggle('selected', btn.dataset.val === archState.size);
+      });
+
+      const shortArch = archState.arch === 'superior'
+        ? 'Sup'
+        : (archState.arch === 'inferior' ? 'Inf' : 'Sup/Inf');
+      const summary = `${shortArch} ${archState.size} ${archState.material}`;
+
+      document.getElementById('btnArchChange').textContent = `+ Troca: ${summary}`;
+      document.getElementById('btnArchKeep').textContent = `+ Mantido: ${summary}`;
+    }
+
+    function appendToNotes(phrase) {
+      isTimeLocked = true;
+      const ta = document.getElementById('rawNotes');
+      const cur = ta.value.trim();
+      ta.value = cur ? `${cur}, ${phrase}` : phrase;
+      persistDraftFormState();
+      ta.focus();
+    }
+
+    function persistDraftFormState() {
+      const state = {
+        date: selectedDate,
+        patientName: document.getElementById('patientName').value,
+        appointmentTime: document.getElementById('appointmentTime').value,
+        currentMech,
+        archState,
+        rawNotes: document.getElementById('rawNotes').value,
+        activeDraftId,
+        isTimeLocked
+      };
+      localStorage.setItem(STORAGE_DRAFT_KEY, JSON.stringify(state));
+      pulseSaveIndicator();
+    }
+
+    function restoreDraftFormState() {
+      const raw = localStorage.getItem(STORAGE_DRAFT_KEY);
+      if (!raw) return;
+      try {
+        const state = JSON.parse(raw);
+        if (!state) return;
+
+        if (state.date && historyStore[state.date]) {
+          selectedDate = state.date;
+          entries = historyStore[selectedDate] || [];
+          document.getElementById('turnDatePicker').value = selectedDate;
+        }
+
+        if (state.currentMech && MECH_LABELS[state.currentMech]) {
+          currentMech = state.currentMech;
+          document.querySelectorAll('#mechTabs .mech-btn').forEach(b => {
+            b.classList.toggle('active', b.dataset.mech === currentMech);
+          });
+        }
+
+        if (state.archState && typeof state.archState === 'object') {
+          archState = { ...archState, ...state.archState };
+        }
+
+        if (state.patientName) document.getElementById('patientName').value = state.patientName;
+        if (state.appointmentTime) document.getElementById('appointmentTime').value = state.appointmentTime;
+        if (state.rawNotes) document.getElementById('rawNotes').value = state.rawNotes;
+        if (state.isTimeLocked) isTimeLocked = true;
+
+        if (state.activeDraftId !== null && state.activeDraftId !== undefined) {
+          const linked = entries.find(e => e.id === state.activeDraftId && e.status === 'draft');
+          if (linked) {
+            activeDraftId = linked.id;
+            const noteInfo = linked.note ? ` • Obs: "${linked.note}"` : '';
+            const durInfo = linked.duration ? ` (${linked.duration} min)` : '';
+            document.getElementById('editingBannerText').textContent = `Atendendo: ${linked.time}${durInfo} • ${formatFirstName(linked.patient)}${noteInfo}`;
+            document.getElementById('editingBanner').classList.remove('hidden');
+          }
+        }
+      } catch (e) {}
+    }
+
+    function clearPersistedDraftState() {
+      localStorage.removeItem(STORAGE_DRAFT_KEY);
+      pulseSaveIndicator();
+    }
+
+    function pulseSaveIndicator() {
+      const el = document.getElementById('autoSaveStatus');
+      if (!el) return;
+      el.textContent = '💾 Salvando...';
+      clearTimeout(savePulseTimer);
+      savePulseTimer = setTimeout(() => {
+        el.textContent = '✓ Salvo localmente';
+      }, 650);
+    }
+
+    function switchDate(newDate) {
+      selectedDate = newDate;
+      entries = historyStore[selectedDate] || [];
+      activeDraftId = null;
+      document.getElementById('editingBanner').classList.add('hidden');
+      document.getElementById('turnDatePicker').value = selectedDate;
+      document.getElementById('todayBtn').classList.toggle('hidden', selectedDate === getTodayISO());
+      renderEntries(true);
+    }
+
+    function startLiveClock() {
+      const days = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+
+      function tick() {
+        const now = new Date();
+        const hh = String(now.getHours()).padStart(2, '0');
+        const mm = String(now.getMinutes()).padStart(2, '0');
+        const dd = String(now.getDate()).padStart(2, '0');
+        const mo = String(now.getMonth() + 1).padStart(2, '0');
+        const currentHM = `${hh}:${mm}`;
+
+        document.getElementById('liveClockTime').textContent = currentHM;
+        document.getElementById('liveClockDate').textContent = `${days[now.getDay()]}, ${dd}/${mo}`;
+
+        if (!isTimeLocked && activeDraftId === null) {
+          const timeInput = document.getElementById('appointmentTime');
+          if (timeInput.value !== currentHM) {
+            timeInput.value = currentHM;
+          }
+        }
+      }
+
+      tick();
+      setInterval(tick, 1000);
+    }
+
+    function updateHeaderHud(skipAutoExport = false) {
+      const ordered = getSortedEntries(entries);
+      const total = ordered.length;
+      const launched = ordered.filter(e => e.copiedEvo).length;
+      const pct = total > 0 ? Math.round((launched / total) * 100) : 0;
+
+      document.getElementById('hudProgressText').textContent = `${launched}/${total} lançados`;
+      document.getElementById('hudProgressBar').style.width = `${pct}%`;
+
+      const nextDraft = ordered.find(e => e.status === 'draft');
+      const nextUnlaunched = ordered.find(e => !e.copiedEvo);
+      const nextEl = document.getElementById('hudNextText');
+
+      if (total === 0) {
+        nextEl.textContent = '• Fila vazia';
+      } else if (nextDraft) {
+        nextEl.textContent = `• Próx: ${nextDraft.time} ${formatFirstName(nextDraft.patient)}`;
+      } else if (nextUnlaunched) {
+        nextEl.textContent = `• Falta copiar: ${formatFirstName(nextUnlaunched.patient)}`;
+      } else {
+        nextEl.textContent = '• Tudo lançado!';
+      }
+
+      if (!skipAutoExport && total > 0 && launched === total) {
+        const dayMeta = metaStore[selectedDate] || {};
+        if (dayMeta.autoExportedCount !== total) {
+          metaStore[selectedDate] = { ...dayMeta, autoExportedCount: total };
+          localStorage.setItem(STORAGE_META_KEY, JSON.stringify(metaStore));
+          exportCurrentDayTxt(true);
+        }
+      }
+    }
+
+    function handleGlobalClick(e) {
+      const target = e.target.closest('[data-action]');
+      if (!target) return;
+
+      const action = target.dataset.action;
+
+      if (action === 'toggle-theme') {
+        const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+        applyTheme(next);
+        localStorage.setItem('of_theme', next);
+      } else if (action === 'toggle-settings') {
+        document.getElementById('settingsDrawer').classList.toggle('hidden');
+      } else if (action === 'save-settings') {
+        localStorage.setItem('of_provider', document.getElementById('apiProvider').value);
+        localStorage.setItem('of_apikey', document.getElementById('apiKey').value.trim());
+        loadApiSettings();
+        document.getElementById('settingsDrawer').classList.add('hidden');
+        showToast('Configurações salvas!');
+      } else if (action === 'open-import') {
+        openImportModal();
+      } else if (action === 'close-import') {
+        closeImportModal();
+      } else if (action === 'confirm-import') {
+        confirmImportSchedule();
+      } else if (action === 'open-backup') {
+        openBackupModal();
+      } else if (action === 'close-backup') {
+        closeBackupModal();
+      } else if (action === 'export-txt') {
+        exportCurrentDayTxt(false);
+      } else if (action === 'export-json') {
+        exportFullJsonBackup();
+      } else if (action === 'go-today') {
+        switchDate(getTodayISO());
+      } else if (action === 'toggle-case') {
+        upperFullFirst = !upperFullFirst;
+        localStorage.setItem('of_upper_first', String(upperFullFirst));
+        target.textContent = upperFullFirst ? 'AA' : 'Aa';
+        const inp = document.getElementById('patientName');
+        if (inp.value.trim()) inp.value = formatFirstName(inp.value);
+        persistDraftFormState();
+        renderEntries(true);
+        showToast(upperFullFirst ? '1º nome em CAIXA ALTA (ex: CLEBERSOM)' : '1º nome com Inicial Maiúscula (ex: Clebersom)');
+      } else if (action === 'select-mech') {
+        setMechanic(target.dataset.mech);
+        persistDraftFormState();
+      } else if (action === 'set-arch') {
+        archState.arch = target.dataset.val;
+        syncArchBuilderUI();
+        persistDraftFormState();
+      } else if (action === 'set-mat') {
+        archState.material = target.dataset.val;
+        syncArchBuilderUI();
+        persistDraftFormState();
+      } else if (action === 'set-size') {
+        archState.size = target.dataset.val;
+        syncArchBuilderUI();
+        persistDraftFormState();
+      } else if (action === 'insert-arch-change') {
+        appendToNotes(`troca de arco ${archState.arch} ${archState.size} ${archState.material}`);
+      } else if (action === 'insert-arch-keep') {
+        appendToNotes(`manutenção do arco ${archState.arch} ${archState.size} ${archState.material}`);
+      } else if (action === 'switch-chip-mode') {
+        chipMode = target.dataset.mode;
+        document.querySelectorAll('#chipModeTabs .mode-tab').forEach(b => {
+          b.classList.toggle('active', b.dataset.mode === chipMode);
+        });
+        renderChipsArea();
+      } else if (action === 'insert-shortcut') {
+        isTimeLocked = true;
+        const idx = Number(target.dataset.idx);
+        const text = SHORTCUTS[currentMech][idx];
+        const ta = document.getElementById('rawNotes');
+        const cur = ta.value.trim();
+        if (text === 'Próx: ') {
+          ta.value = cur ? `${cur}\nPróx: ` : 'Próx: ';
+        } else {
+          ta.value = cur ? `${cur}, ${text}` : text;
+        }
+        persistDraftFormState();
+        ta.focus();
+      } else if (action === 'apply-preset') {
+        isTimeLocked = true;
+        const idx = Number(target.dataset.idx);
+        const preset = PRESETS[currentMech][idx];
+        const ta = document.getElementById('rawNotes');
+        ta.value = preset.text;
+        persistDraftFormState();
+        ta.focus();
+        showToast('Modelo inserido!');
+      } else if (action === 'load-draft') {
+        loadDraftIntoConsole(Number(target.dataset.id));
+      } else if (action === 'cancel-draft-edit') {
+        clearDraftLink();
+      } else if (action === 'compile') {
+        compileEntry();
+      } else if (action === 'clear-form') {
+        clearForm();
+      } else if (action === 'clear-all') {
+        handleClearAll(target);
+      } else if (action === 'delete-entry') {
+        const id = Number(target.dataset.id);
+        if (activeDraftId === id) clearDraftLink();
+        entries = entries.filter(item => item.id !== id);
+        saveEntries();
+        renderEntries(true);
+      } else if (action === 'copy-evo') {
+        copyField(Number(target.dataset.id), 'evolution');
+      } else if (action === 'copy-next') {
+        copyField(Number(target.dataset.id), 'nextStep');
+      } else if (action === 'copy-patient') {
+        const item = entries.find(i => i.id === Number(target.dataset.id));
+        if (item) copyText(formatFirstName(item.patient), 'Primeiro nome copiado!');
+      }
+    }
+
+    function setMechanic(mechKey) {
+      currentMech = mechKey;
+      document.querySelectorAll('#mechTabs .mech-btn').forEach(b => {
+        b.classList.toggle('active', b.dataset.mech === currentMech);
+      });
+
+      // Ajusta material sugerido ao alternar entre Convencional e Autoligado
+      if (mechKey === 'slp' && archState.material === 'NiTi') {
+        archState.material = 'Termoativado';
+      } else if (mechKey === 'mbt' && archState.material === 'Termoativado') {
+        archState.material = 'NiTi';
+      }
+
+      syncArchBuilderUI();
+      renderChipsArea();
+    }
+
+    function normalizeLookalikes(str) {
+      const map = {
+        '\u0391': 'A', '\u0392': 'B', '\u0395': 'E', '\u0396': 'Z',
+        '\u0397': 'H', '\u0399': 'I', '\u039A': 'K', '\u039C': 'M',
+        '\u039D': 'N', '\u039F': 'O', '\u03A1': 'P', '\u03A4': 'T',
+        '\u03A5': 'Y', '\u03A7': 'X'
+      };
+      return str.replace(/[\u0391-\u03A9]/g, ch => map[ch] || ch);
+    }
+
+    function formatFirstName(raw) {
+      if (!raw) return '';
+      const cleaned = normalizeLookalikes(raw).trim();
+      if (!cleaned) return '';
+      const firstWord = cleaned.split(/\s+/)[0];
+      if (!firstWord) return '';
+      return upperFullFirst
+        ? firstWord.toUpperCase()
+        : firstWord.charAt(0).toUpperCase() + firstWord.slice(1).toLowerCase();
+    }
+
+    function escapeHtml(str) {
+      return String(str || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    function detectMechanicFromNote(note, fallbackMech) {
+      if (!note) return fallbackMech;
+      const low = note.toLowerCase();
+      if (low.includes('clear') || low.includes('alinhador') || low.includes('placa')) {
+        return 'clearcorrect';
+      }
+      if (low.includes('conten') || low.includes('revis')) {
+        return 'contencao';
+      }
+      if (low.includes('slp') || low.includes('autolig')) {
+        return 'slp';
+      }
+      return fallbackMech;
+    }
+
+    function parseClinicorpSchedule(raw, fallbackMech) {
+      const lines = raw.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+      const results = [];
+      let currentSlot = null;
+
+      const slotRegex = /^([01]?\d|2[0-3]):([0-5]\d)\s*(?:-|às|a|\s)\s*([01]?\d|2[0-3]):([0-5]\d)(?:\s*\|?\s*AGENDAMENTO)?$/i;
+      const patientRegex = /^(\d+)\s*-\s*(.+)$/;
+      const ignoreRegex = /^(\d{1,2}\/\d{1,2}|Clinicorp|https?:\/\/|\|?\s*AGENDAMENTO$)/i;
+
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        if (ignoreRegex.test(line)) continue;
+
+        const slotMatch = line.match(slotRegex);
+        if (slotMatch) {
+          const sh = Number(slotMatch[1]);
+          const sm = Number(slotMatch[2]);
+          const eh = Number(slotMatch[3]);
+          const em = Number(slotMatch[4]);
+          const durationMin = Math.max(0, (eh * 60 + em) - (sh * 60 + sm));
+
+          currentSlot = {
+            time: `${String(sh).padStart(2, '0')}:${String(sm).padStart(2, '0')}`,
+            duration: durationMin || 15
+          };
+          continue;
+        }
+
+        if (currentSlot) {
+          const patMatch = line.match(patientRegex);
+          if (patMatch) {
+            const afterId = patMatch[2].trim();
+            const nameOnlyPart = afterId.split(/\(|\s+-\s+|\s*-\s*CLINI|\s*-\s*\+?\d{8,}/i)[0].trim();
+            const firstName = formatFirstName(nameOnlyPart);
+
+            let note = '';
+            if (i + 1 < lines.length) {
+              const nextLine = lines[i + 1];
+              if (!slotRegex.test(nextLine) && !patientRegex.test(nextLine) && !ignoreRegex.test(nextLine)) {
+                note = nextLine;
+                i++;
+              }
+            }
+
+            if (firstName && firstName.length >= 2) {
+              const detectedMech = detectMechanicFromNote(note, fallbackMech);
+              results.push({
+                time: currentSlot.time,
+                duration: currentSlot.duration,
+                patient: firstName,
+                note,
+                mechKey: detectedMech
+              });
+            }
+          }
+        }
+      }
+
+      return results;
+    }
+
+    function openImportModal() {
+      document.getElementById('schedulePasteArea').value = '';
+      document.getElementById('importTargetDateLabel').textContent = formatDateBR(selectedDate);
+      updateImportPreview();
+      document.getElementById('importModal').classList.remove('hidden');
+      setTimeout(() => document.getElementById('schedulePasteArea').focus(), 50);
+    }
+
+    function closeImportModal() {
+      document.getElementById('importModal').classList.add('hidden');
+    }
+
+    function updateImportPreview() {
+      const raw = document.getElementById('schedulePasteArea').value;
+      const fallbackMech = document.getElementById('importDefaultMech').value || 'mbt';
+      const parsed = parseClinicorpSchedule(raw, fallbackMech);
+      const previewBox = document.getElementById('importPreviewBox');
+      const btn = document.getElementById('confirmImportBtn');
+
+      btn.textContent = `⚡ Gerar Cards (${parsed.length})`;
+      if (parsed.length === 0) {
+        previewBox.innerHTML = '';
+        return;
+      }
+
+      previewBox.innerHTML = parsed.map(p => {
+        const label = MECH_LABELS[p.mechKey] || 'Convencional';
+        const noteTag = p.note ? ` • ${escapeHtml(p.note)}` : '';
+        return `<span class="preview-tag cat-${p.mechKey}">${p.time} (${p.duration}m) • ${escapeHtml(p.patient)} [${label}]${noteTag}</span>`;
+      }).join('');
+    }
+
+    function confirmImportSchedule() {
+      const raw = document.getElementById('schedulePasteArea').value;
+      const fallbackMech = document.getElementById('importDefaultMech').value || 'mbt';
+      const parsed = parseClinicorpSchedule(raw, fallbackMech);
+
+      if (parsed.length === 0) {
+        showToast('Nenhum agendamento válido encontrado no texto colado.');
+        return;
+      }
+
+      const baseId = Date.now();
+      const newCards = parsed.map((item, idx) => ({
+        id: baseId + idx,
+        patient: item.patient,
+        time: item.time,
+        duration: item.duration,
+        note: item.note,
+        mechKey: item.mechKey,
+        mechanic: MECH_LABELS[item.mechKey],
+        status: 'draft',
+        evolution: '',
+        nextStep: '',
+        copiedEvo: false,
+        copiedNext: false
+      }));
+
+      entries = getSortedEntries([...entries, ...newCards]);
+      saveEntries();
+      renderEntries(true);
+      closeImportModal();
+      showToast(`${newCards.length} pacientes importados!`);
+    }
+
+    function loadDraftIntoConsole(id) {
+      const item = entries.find(e => e.id === id);
+      if (!item) return;
+
+      activeDraftId = id;
+      isTimeLocked = true;
+      document.getElementById('patientName').value = formatFirstName(item.patient);
+      document.getElementById('appointmentTime').value = item.time !== '--:--' ? item.time : '';
+      if (item.mechKey && MECH_LABELS[item.mechKey]) {
+        setMechanic(item.mechKey);
+      }
+      document.getElementById('rawNotes').value = '';
+
+      const banner = document.getElementById('editingBanner');
+      const noteInfo = item.note ? ` • Obs: "${item.note}"` : '';
+      const durInfo = item.duration ? ` (${item.duration} min)` : '';
+      document.getElementById('editingBannerText').textContent = `Atendendo: ${item.time}${durInfo} • ${formatFirstName(item.patient)}${noteInfo}`;
+      banner.classList.remove('hidden');
+
+      persistDraftFormState();
+      renderEntries(true);
+      document.getElementById('rawNotes').focus();
+    }
+
+    function clearDraftLink() {
+      activeDraftId = null;
+      document.getElementById('editingBanner').classList.add('hidden');
+      persistDraftFormState();
+      renderEntries(true);
+    }
+
+    function applyTheme(theme) {
+      document.documentElement.dataset.theme = theme;
+      document.getElementById('themeBtn').textContent = theme === 'dark' ? '☀️ Modo Claro' : '🌙 Modo Escuro';
+    }
+
+    function renderChipsArea() {
+      const area = document.getElementById('chipsArea');
+      if (chipMode === 'shortcuts') {
+        const list = SHORTCUTS[currentMech] || [];
+        area.innerHTML = list.map((txt, idx) =>
+          `<button type="button" class="chip" data-action="insert-shortcut" data-idx="${idx}">+ ${txt}</button>`
+        ).join('');
+      } else {
+        const list = PRESETS[currentMech] || [];
+        area.innerHTML = list.map((p, idx) =>
+          `<button type="button" class="chip preset" data-action="apply-preset" data-idx="${idx}">⚡ ${p.title}</button>`
+        ).join('');
+      }
+    }
+
+    function expandAbbr(txt) {
+      return txt
+        .replace(/\bsup\b/gi, 'superior')
+        .replace(/\binf\b/gi, 'inferior')
+        .replace(/\bcl2\b|\bcl II\b/gi, 'Classe II')
+        .replace(/\bcl3\b|\bcl III\b/gi, 'Classe III')
+        .replace(/\bniti\b/gi, 'NiTi')
+        .replace(/\brec\b/gi, 'recolagem')
+        .replace(/\bipr\b/gi, 'desgaste interproximal (IPR)');
+    }
+
+    function generateLocalEvolution(mechKey, firstNameFormatted, procRaw, nextRaw) {
+      seed++;
+      const mechLabel = MECH_LABELS[mechKey];
+      const proc = expandAbbr(procRaw);
+      const subject = firstNameFormatted && firstNameFormatted !== 'Paciente'
+        ? `Paciente ${firstNameFormatted}`
+        : 'Paciente';
+
+      const openings = {
+        mbt: [
+          `${subject} comparece para manutenção ortodôntica em mecânica fixa convencional.`,
+          `${subject} atendido(a) em consulta de rotina para controle biomecânico com aparelho fixo convencional.`,
+          `Sessão de acompanhamento ortodôntico em sistema convencional (${subject}).`
+        ],
+        slp: [
+          `${subject} comparece para controle biomecânico em sistema autoligado passivo.`,
+          `Sessão de manutenção ortodôntica com aparelho autoligado (${subject}).`,
+          `${subject} atendido(a) para ativação clínica em mecânica autoligada.`
+        ],
+        clearcorrect: [
+          `${subject} comparece para acompanhamento de tratamento ortodôntico com alinhadores ClearCorrect.`,
+          `Sessão de monitoramento biomecânico e adaptação de alinhadores ClearCorrect (${subject}).`,
+          `${subject} atendido(a) para avaliação de evolução clínica no protocolo ClearCorrect.`
+        ],
+        contencao: [
+          `${subject} comparece para revisão periódica de contenção ortodôntica pós-tratamento ativo.`,
+          `Consulta preventiva de controle clínico das contenções ortodônticas (${subject}).`,
+          `${subject} atendido(a) para avaliação de estabilidade e integridade das contenções.`
+        ]
+      };
+
+      const middles = [
+        `Nesta sessão, realizou-se: ${proc}.`,
+        `Durante o atendimento procedeu-se com: ${proc}.`,
+        `Conduta executada no dia: ${proc}.`
+      ];
+
+      const endings = {
+        mbt: [
+          `Verificada integridade dos acessórios e estabilidade dos arcos. Orientado(a) quanto à higienização e cuidados.`,
+          `Conferido travamento dos arcos e ausência de interferências oclusais. Mantido protocolo de acompanhamento.`,
+          `Checada adaptação dos componentes ortodônticos sem queixas agudas. Paciente ciente das orientações.`
+        ],
+        slp: [
+          `Conferido fechamento correto dos clips autoligados e livre deslizamento do fio. Orientado(a) sobre higienização.`,
+          `Verificada passividade e assentamento do arco nos slots sem desconforto. Segue em acompanhamento.`,
+          `Checada integridade dos braquetes autoligados e estabilidade oclusal. Paciente orientado(a).`
+        ],
+        clearcorrect: [
+          `Confirmado bom assentamento das placas e ausência de compressão gengival. Reforçado uso mínimo de 22h/dia.`,
+          `Verificada adaptação marginal dos alinhadores e integridade dos attachments. Segue cronograma de trocas.`,
+          `Avaliada evolução dentária compatível com o planejamento virtual. Mantidas instruções de uso contínuo.`
+        ],
+        contencao: [
+          `Observada boa estabilidade oclusal e ausência de recidivas significativas. Reforçada manutenção do uso.`,
+          `Contenções íntegras e bem adaptadas. Orientado(a) a retornar caso ocorra fratura ou descolamento.`,
+          `Estabilidade do resultado ortodôntico preservada. Segue em monitoramento periódico.`
+        ]
+      };
+
+      const o = openings[mechKey][seed % openings[mechKey].length];
+      const m = middles[(seed + 1) % middles.length];
+      const e = endings[mechKey][(seed + 2) % endings[mechKey].length];
+
+      return {
+        evolution: `${o} ${m} ${e}`,
+        nextStep: nextRaw
+          ? `Próx. sessão (${mechLabel}): ${expandAbbr(nextRaw)}.`
+          : `Próx. sessão (${mechLabel}): Reavaliar resposta biomecânica e dar sequência ao planejamento.`
+      };
+    }
+
+    async function compileEntry() {
+      const rawPatient = document.getElementById('patientName').value.trim();
+      const patient = rawPatient ? formatFirstName(rawPatient) : 'Paciente';
+      const time = document.getElementById('appointmentTime').value || '--:--';
+      const raw = document.getElementById('rawNotes').value.trim();
+
+      if (!raw) {
+        showToast('Digite ou selecione ao menos um tópico clínico.');
+        return;
+      }
+
+      let procPart = raw;
+      let nextPart = '';
+      const splitProx = raw.split(/pr[oó]x\s*:/i);
+      if (splitProx.length > 1) {
+        procPart = splitProx[0].trim().replace(/,$/, '');
+        nextPart = splitProx.slice(1).join(' ').trim();
+      }
+
+      const btn = document.getElementById('compileBtn');
+      btn.disabled = true;
+      btn.textContent = '⏳ Compilando...';
+
+      let result;
+      const provider = localStorage.getItem('of_provider') || 'offline';
+      const apiKey = localStorage.getItem('of_apikey') || '';
+
+      if (provider !== 'offline' && apiKey) {
+        try {
+          result = await callLLM(provider, apiKey, MECH_LABELS[currentMech], patient, procPart, nextPart);
+        } catch (err) {
+          showToast('Falha na API. Usando motor local.');
+          result = generateLocalEvolution(currentMech, patient, procPart, nextPart);
+        }
+      } else {
+        result = generateLocalEvolution(currentMech, patient, procPart, nextPart);
+      }
+
+      if (activeDraftId !== null) {
+        const idx = entries.findIndex(e => e.id === activeDraftId);
+        if (idx !== -1) {
+          entries[idx] = {
+            ...entries[idx],
+            patient,
+            time,
+            mechKey: currentMech,
+            mechanic: MECH_LABELS[currentMech],
+            status: 'compiled',
+            evolution: result.evolution,
+            nextStep: result.nextStep,
+            copiedEvo: false,
+            copiedNext: false
+          };
+        }
+        clearDraftLink();
+      } else {
+        entries.push({
+          id: Date.now(),
+          patient,
+          time,
+          duration: null,
+          note: '',
+          mechKey: currentMech,
+          mechanic: MECH_LABELS[currentMech],
+          status: 'compiled',
+          evolution: result.evolution,
+          nextStep: result.nextStep,
+          copiedEvo: false,
+          copiedNext: false
+        });
+      }
+
+      // Reordena colocando pendentes no topo e compilados abaixo
+      entries = getSortedEntries(entries);
+      saveEntries();
+      renderEntries(true);
+      clearForm();
+
+      btn.disabled = false;
+      btn.textContent = '⚡ Compilar Evolução';
+      showToast('Evolução compilada e movida para concluídos!');
+    }
+
+    async function callLLM(provider, apiKey, mechanic, patient, proc, next) {
+      const endpoints = {
+        openai: { url: 'https://api.openai.com/v1/chat/completions', model: 'gpt-4o-mini' },
+        groq: { url: 'https://api.groq.com/openai/v1/chat/completions', model: 'llama-3.3-70b-versatile' },
+        deepseek: { url: 'https://api.deepseek.com/chat/completions', model: 'deepseek-chat' }
+      };
+      const cfg = endpoints[provider];
+      const sys = `Você é ortodontista redigindo evoluções para o Clinicorp. Categorias: Convencional, Autoligado, ClearCorrect e Contenção. Retorne APENAS JSON válido com "evolution" e "nextStep". Mantenha sempre o primeiro nome do paciente com letra maiúscula e varie a redação entre consultas.`;
+      const usr = `Paciente: ${patient}\nCategoria: ${mechanic}\nConduta: ${proc}\nPróxima consulta: ${next || 'Não especificada'}`;
+
+      const res = await fetch(cfg.url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+        body: JSON.stringify({
+          model: cfg.model,
+          messages: [{ role: 'system', content: sys }, { role: 'user', content: usr }],
+          temperature: 0.65,
+          response_format: { type: 'json_object' }
+        })
+      });
+      const data = await res.json();
+      return JSON.parse(data.choices[0].message.content);
+    }
+
+    function renderCardHtml(item) {
+      const mechKey = MECH_LABELS[item.mechKey] ? item.mechKey : 'mbt';
+      const catLabel = MECH_LABELS[mechKey];
+      const firstName = escapeHtml(formatFirstName(item.patient));
+
+      const durBadge = item.duration
+        ? `<span class="tag-dur ${item.duration >= 30 ? 'long' : ''}">⏱ ${item.duration} min</span>`
+        : '';
+      const noteBadge = item.note
+        ? `<span class="tag-note">📌 ${escapeHtml(item.note)}</span>`
+        : '';
+
+      if (item.status === 'draft') {
+        const isBeingEdited = item.id === activeDraftId;
+        return `
+          <article class="entry-card draft cat-${mechKey} ${isBeingEdited ? 'active-draft' : ''}">
+            <div class="entry-head">
+              <div class="entry-meta">
+                <span class="tag-time">${escapeHtml(item.time)}</span>
+                ${durBadge}
+                <span class="tag-name" data-action="copy-patient" data-id="${item.id}" title="Clique para copiar o nome">${firstName}</span>
+                <span class="tag-mech cat-${mechKey}">${catLabel}</span>
+                ${noteBadge}
+              </div>
+              <div style="display:flex; align-items:center; gap:6px;">
+                <button type="button" class="btn-fill-draft" data-action="load-draft" data-id="${item.id}">
+                  ${isBeingEdited ? '✏️ Preenchendo...' : '⚡ Evoluir'}
+                </button>
+                <button type="button" class="btn-sm" style="padding:4px 8px; color:var(--danger);" data-action="delete-entry" data-id="${item.id}">✕</button>
+              </div>
+            </div>
+          </article>
+        `;
+      }
+
+      return `
+        <article class="entry-card compiled-card cat-${mechKey} ${item.copiedEvo ? 'done' : ''}">
+          <div class="entry-head">
+            <div class="entry-meta">
+              <span class="tag-time">${escapeHtml(item.time)}</span>
+              ${durBadge}
+              <span class="tag-name" data-action="copy-patient" data-id="${item.id}" title="Clique para copiar o nome">${firstName}</span>
+              <span class="tag-mech cat-${mechKey}">${catLabel}</span>
+              ${noteBadge}
+            </div>
+            <div style="display:flex; align-items:center; gap:6px;">
+              ${item.copiedEvo ? '<span class="tag-done">✓ Lançado</span>' : ''}
+              <button type="button" class="btn-sm" style="padding:2px 7px; color:var(--danger);" data-action="delete-entry" data-id="${item.id}">✕</button>
+            </div>
+          </div>
+
+          <div class="lbl" style="margin-bottom:4px;">Evolução Clínica (Clinicorp)</div>
+          <textarea class="out-box" rows="3" data-edit-id="${item.id}" data-edit-field="evolution">${escapeHtml(item.evolution)}</textarea>
+
+          <div class="lbl" style="margin-bottom:4px; color:var(--amber-text);">Próxima Consulta</div>
+          <textarea class="next-box" rows="2" data-edit-id="${item.id}" data-edit-field="nextStep">${escapeHtml(item.nextStep)}</textarea>
+
+          <div class="copy-row">
+            <button type="button" class="btn-copy ${item.copiedEvo ? 'copied' : ''}" data-action="copy-evo" data-id="${item.id}">
+              ${item.copiedEvo ? '✓ Evolução Copiada' : '📋 Copiar Evolução'}
+            </button>
+            <button type="button" class="btn-copy-next ${item.copiedNext ? 'copied' : ''}" data-action="copy-next" data-id="${item.id}">
+              ${item.copiedNext ? '✓ Próx. Copiado' : '🗓️ Copiar Próx. Consulta'}
+            </button>
+          </div>
+        </article>
+      `;
+    }
+
+    function renderEntries(skipAutoExport = false) {
+      const list = document.getElementById('entriesList');
+      const ordered = getSortedEntries(entries);
+      document.getElementById('countBadge').textContent = ordered.length;
+      updateHeaderHud(skipAutoExport);
+
+      if (ordered.length === 0) {
+        list.innerHTML = `<div class="empty">Nenhum paciente registrado em <b>${formatDateBR(selectedDate)}</b>.<br>Clique em <b>📅 Colar Agenda</b> no topo para importar os horários do Clinicorp.</div>`;
+        return;
+      }
+
+      const drafts = ordered.filter(item => item.status === 'draft');
+      const compiled = ordered.filter(item => item.status !== 'draft');
+
+      let html = drafts.map(renderCardHtml).join('');
+
+      if (compiled.length > 0) {
+        if (drafts.length > 0) {
+          html += `<div class="queue-divider">✓ Atendidos / Compilados (${compiled.length})</div>`;
+        }
+        html += compiled.map(renderCardHtml).join('');
+      }
+
+      list.innerHTML = html;
+
+      list.querySelectorAll('textarea[data-edit-id]').forEach(ta => {
+        ta.addEventListener('input', function () {
+          const id = Number(this.dataset.editId);
+          const field = this.dataset.editField;
+          const entry = entries.find(e => e.id === id);
+          if (entry) {
+            entry[field] = this.value;
+            saveEntries();
+          }
+        });
+      });
+    }
+
+    function copyField(id, field) {
+      const item = entries.find(e => e.id === id);
+      if (!item) return;
+
+      let text = item[field];
+      const capFirst = formatFirstName(item.patient);
+      if (capFirst && capFirst.toLowerCase() !== 'paciente') {
+        const rx = new RegExp(`\\b${capFirst}\\b`, 'gi');
+        text = text.replace(rx, capFirst);
+        item[field] = text;
+      }
+
+      copyText(text, field === 'evolution' ? 'Evolução copiada para o Clinicorp!' : 'Próxima consulta copiada!', () => {
+        if (field === 'evolution') item.copiedEvo = true;
+        if (field === 'nextStep') item.copiedNext = true;
+        saveEntries();
+        renderEntries(false);
+      });
+    }
+
+    function copyText(text, msg, onSuccess) {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => {
+          if (onSuccess) onSuccess();
+          showToast(msg);
+        }).catch(() => fallbackCopy(text, msg, onSuccess));
+      } else {
+        fallbackCopy(text, msg, onSuccess);
+      }
+    }
+
+    function fallbackCopy(text, msg, onSuccess) {
+      const tmp = document.createElement('textarea');
+      tmp.value = text;
+      document.body.appendChild(tmp);
+      tmp.select();
+      document.execCommand('copy');
+      document.body.removeChild(tmp);
+      if (onSuccess) onSuccess();
+      showToast(msg);
+    }
+
+    function handleClearAll(btn) {
+      if (entries.length === 0) return;
+      if (btn.dataset.confirming === 'true') {
+        entries = [];
+        clearDraftLink();
+        saveEntries();
+        renderEntries(true);
+        btn.dataset.confirming = 'false';
+        btn.textContent = 'Limpar Dia';
+        clearTimeout(confirmClearTimer);
+        showToast('Lista do dia limpa!');
+      } else {
+        btn.dataset.confirming = 'true';
+        btn.textContent = 'Confirmar?';
+        confirmClearTimer = setTimeout(() => {
+          btn.dataset.confirming = 'false';
+          btn.textContent = 'Limpar Dia';
+        }, 3000);
+      }
+    }
+
+    function clearForm() {
+      document.getElementById('patientName').value = '';
+      document.getElementById('rawNotes').value = '';
+      isTimeLocked = false;
+      const now = new Date();
+      document.getElementById('appointmentTime').value = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+      if (activeDraftId !== null) clearDraftLink();
+      clearPersistedDraftState();
+      document.getElementById('patientName').focus();
+    }
+
+    function saveEntries() {
+      entries = getSortedEntries(entries);
+      historyStore[selectedDate] = entries;
+
+      const sortedDates = Object.keys(historyStore).sort();
+      while (sortedDates.length > 30) {
+        const oldest = sortedDates.shift();
+        delete historyStore[oldest];
+        delete metaStore[oldest];
+      }
+
+      localStorage.setItem(STORAGE_HISTORY_KEY, JSON.stringify(historyStore));
+      localStorage.setItem(STORAGE_META_KEY, JSON.stringify(metaStore));
+      pulseSaveIndicator();
+    }
+
+    function openBackupModal() {
+      document.getElementById('backupDateLabel').textContent = formatDateBR(selectedDate);
+      document.getElementById('backupModal').classList.remove('hidden');
+    }
+
+    function closeBackupModal() {
+      document.getElementById('backupModal').classList.add('hidden');
+    }
+
+    function exportCurrentDayTxt(isAutoClose = false) {
+      if (entries.length === 0) {
+        if (!isAutoClose) showToast('Não há atendimentos neste dia para exportar.');
+        return;
+      }
+
+      const chronological = [...entries].sort((a, b) => (a.time || '').localeCompare(b.time || ''));
+      const dateBR = formatDateBR(selectedDate);
+      const launched = chronological.filter(e => e.copiedEvo).length;
+      const lines = [
+        `ORTHOFLOW • FECHAMENTO CLÍNICO (${dateBR})`,
+        `Resumo: ${launched}/${chronological.length} evoluções lançadas`,
+        `Gerado em: ${new Date().toLocaleString('pt-BR')}`,
+        `============================================================`,
+        ``
+      ];
+
+      chronological.forEach((item, idx) => {
+        const cat = MECH_LABELS[item.mechKey] || item.mechanic || 'Convencional';
+        const dur = item.duration ? ` (${item.duration} min)` : '';
+        const statusTxt = item.copiedEvo ? 'LANÇADO' : (item.status === 'compiled' ? 'COMPILADO' : 'AGUARDANDO');
+        lines.push(`${idx + 1}. ${item.time}${dur} • ${formatFirstName(item.patient)} [${cat}] — ${statusTxt}`);
+        if (item.note) lines.push(`   Obs. Agenda: ${item.note}`);
+        if (item.evolution) {
+          lines.push(`   Evolução: ${item.evolution}`);
+          lines.push(`   Próx. Consulta: ${item.nextStep}`);
+        }
+        lines.push(`------------------------------------------------------------`);
+      });
+
+      const prefix = isAutoClose ? 'OrthoFlow_Fechamento' : 'OrthoFlow_Relatorio';
+      downloadFile(`${prefix}_${selectedDate}.txt`, lines.join('\n'), 'text/plain;charset=utf-8');
+
+      if (isAutoClose) {
+        showToast(`🎉 Turno 100% concluído! Fechamento .txt baixado.`);
+      } else {
+        showToast('Relatório .TXT baixado!');
+      }
+    }
+
+    function exportFullJsonBackup() {
+      const payload = {
+        app: 'OrthoFlow',
+        exportedAt: new Date().toISOString(),
+        history: historyStore
+      };
+      downloadFile(`OrthoFlow_Backup_${selectedDate}.json`, JSON.stringify(payload, null, 2), 'application/json;charset=utf-8');
+      showToast('Backup completo .JSON baixado!');
+    }
+
+    function handleRestoreJson(e) {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function (ev) {
+        try {
+          const data = JSON.parse(ev.target.result);
+          const incomingHistory = data.history || data;
+          if (!incomingHistory || typeof incomingHistory !== 'object') {
+            throw new Error('Formato inválido');
+          }
+
+          let restoredDays = 0;
+          Object.keys(incomingHistory).forEach(dateKey => {
+            if (/^\d{4}-\d{2}-\d{2}$/.test(dateKey) && Array.isArray(incomingHistory[dateKey])) {
+              const existingIds = new Set((historyStore[dateKey] || []).map(item => item.id));
+              const merged = getSortedEntries([
+                ...(historyStore[dateKey] || []),
+                ...incomingHistory[dateKey].filter(item => !existingIds.has(item.id))
+              ]);
+              historyStore[dateKey] = merged;
+              restoredDays++;
+            }
+          });
+
+          localStorage.setItem(STORAGE_HISTORY_KEY, JSON.stringify(historyStore));
+          entries = historyStore[selectedDate] || [];
+          renderEntries(true);
+          closeBackupModal();
+          showToast(`${restoredDays} dia(s) restaurado(s) com sucesso!`);
+        } catch (err) {
+          showToast('Arquivo de backup inválido.');
+        } finally {
+          e.target.value = '';
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function downloadFile(filename, content, mimeType) {
+      const blob = new Blob([content], { type: mimeType });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
+
+    function loadApiSettings() {
+      const provider = localStorage.getItem('of_provider') || 'offline';
+      const apiKey = localStorage.getItem('of_apikey') || '';
+      document.getElementById('apiProvider').value = provider;
+      document.getElementById('apiKey').value = apiKey;
+
+      const dot = document.getElementById('apiDot');
+      const lbl = document.getElementById('apiLabel');
+      if (provider !== 'offline' && apiKey) {
+        dot.classList.add('on');
+        lbl.textContent = `IA: ${provider.toUpperCase()}`;
+      } else {
+        dot.classList.remove('on');
+        lbl.textContent = 'Motor Local';
+      }
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 2500);
+    }
+
+    init();
+  </script>
+</body>
+</html>
